@@ -1,0 +1,33 @@
+
+table, th, td {
+  border: 1px solid transparent;
+  border-collapse: collapse;
+  background-color: CornflowerBlue;
+  color: white;
+  font-family: sans-serif;
+  padding: 4px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+th, td {
+  border: 1px solid white;
+}
+
+table {
+  opacity: 90%;
+}
+
+.name {
+  width: 150px;
+}
+.power, .hr {
+  width: 75px;
+  text-align: center;
+}
+
+th {
+  font-weight: 900;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}

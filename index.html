@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <title>Hello World!</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <template id="template-player-data">
+      <tr class="player-data">
+        <td class="name"></td>
+        <td class="power"></td>
+        <td class="hr"></td>
+      </tr>
+    </template>
+    <table id="player-data">
+      <tr class="player-data-header">
+        <th class="name">Name</th>
+        <th class="power">Power</th>
+        <th class="hr">HR</th>
+      </tr>
+    </table>
+    <!-- You can also require other files to run in this process -->
+    <script src="./renderer.js"></script>
+  </body>
+</html>
