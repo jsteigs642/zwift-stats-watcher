@@ -6,75 +6,21 @@
 // process.
 
 const players = {
-  1441367: { // new player row
-    id: 1441367,
-    name: 'fake name 1',
+  72371: { // new player row
+    id: 72371,
+    name: 'Justin',
     distance: 12475,
     power: 200,
     heartrate: 156,
   },
-  696358: { // new player row
-    id: 696358,
-    name: 'fake name 2',
-    distance: 12474,
-    power: 180,
-    heartrate: 165,
+  12345: { // new player row
+    id: 12345,
+    name: 'Fake user',
+    distance: 12475,
+    power: 200,
+    heartrate: 156,
   },
-  286609: { // new player row
-    id: 286609,
-    name: 'fake name 3',
-    distance: 12474,
-    power: 180,
-    heartrate: 165,
-  },
-  436482: { // new player row
-    id: 436482,
-    name: 'fake name 4',
-    distance: 12474,
-    power: 180,
-    heartrate: 165,
-  },
-  94821: { // new player row
-    id: 94821,
-    name: 'fake name 5',
-    distance: 12474,
-    power: 180,
-    heartrate: 165,
-  },
-  2897693: { // new player row
-    id: 2897693,
-    name: 'fake name 6',
-    distance: 12474,
-    power: 180,
-    heartrate: 165,
-  }
 }
-
-// 2401253
-// renderer.js:58 78957
-// renderer.js:58 340456
-// renderer.js:58 2926529
-// renderer.js:58 3233042
-// renderer.js:58 383411
-// renderer.js:58 1496840
-// renderer.js:58 436482
-// renderer.js:58 94821
-// renderer.js:58 1344555
-// renderer.js:58 429749
-// renderer.js:58 1094589
-
-// 930448
-// renderer.js:100 13064
-// renderer.js:100 964105
-// renderer.js:100 2897693
-// renderer.js:100 666826
-// renderer.js:100 108766
-// renderer.js:100 696358
-// renderer.js:100 521196
-// renderer.js:100 2166008
-// renderer.js:100 295964
-// renderer.js:100 282773
-// renderer.js:100 41870
 
 function setPlayerTableData(playerId) {
   const player = players[playerId];
@@ -114,7 +60,7 @@ window.zwiftData.on('incomingPlayerState', (playerState, serverWorldTime) => {
 });
 
 // PlayerState {
-//   id: 423578,
+//   id: 72371,
 //   worldTime: Long { low: 323773601, high: 45, unsigned: false },
 //   distance: 12475,
 //   roadTime: 98795,

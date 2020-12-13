@@ -20,11 +20,13 @@ To clone and run this repository you'll need [Git](https://git-scm.com) and [Nod
 
 ```bash
 # Clone this repository
-git clone https://github.com/electron/electron-quick-start
+git clone https://github.com/jsteigs642/zwift-stats-watcher
 # Go into the repository
-cd electron-quick-start
+cd zwift-stats-watcher
 # Install dependencies
 npm install
+# Rebuild dependencies for electron
+.\node_modules\.bin\electron-rebuild.cmd
 # Run the app
 npm start
 ```
