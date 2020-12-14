@@ -1,6 +1,5 @@
 const ip = require('ip');
 const ZwiftPacketMonitor = require('@zwfthcks/zwift-packet-monitor');
-// const ZwiftPacketMonitor = require('./ZwiftPacketMonitor');
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.

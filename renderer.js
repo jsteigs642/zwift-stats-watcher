@@ -9,11 +9,12 @@ const players = {
   72371: { // new player row
     id: 72371,
     name: 'Justin',
-    ftp: 302,
-    maxHR: 194,
-    distance: 12475,
-    power: 200,
-    heartrate: 156,
+    ftp: 302, // Watts
+    maxHR: 194, // bpm
+    weight: 81, // kg
+    distance: 12475, // who knows...
+    power: 200, // watts
+    heartrate: 156, // bpm
   },
   // 12345: { // new player row
   //   id: 12345,
@@ -49,31 +50,40 @@ const HR_ZONES = {
 function getHRZone(player) {
   const maxHR = player.maxHR;
   const hr = player.heartrate;
-  for (const zone in HR_ZONES) {
-    if (hr < maxHR * HR_ZONES[zone]) {
-      return zone;
+  if (maxHR) {
+    for (const zone in HR_ZONES) {
+      if (hr < maxHR * HR_ZONES[zone]) {
+        return zone;
+      }
     }
+    return 5;
   }
-  return 5;
+  return 1;
 }
 
 function getPowerZone(player) {
   const ftp = player.ftp;
   const power = player.power;
-  for (const zone in POWER_ZONES) {
-    if (power < ftp * POWER_ZONES[zone]) {
-      return zone;
+  if (ftp) {
+    for (const zone in POWER_ZONES) {
+      if (power < ftp * POWER_ZONES[zone]) {
+        return zone;
+      }
     }
+    return 5;
   }
-  return 5;
+  return 1;
 }
 
 async function setPlayerZPData(playerId) {
   try {
     const resp = await fetch(`https://www.zwiftpower.com/cache3/profile/${playerId}_all.json`).then(r => r.json());
     if (resp) {
-      players[playerId].ftp = resp.data[0].ftp;
-      const hrs = resp.data.map((race) => {
+      const data = resp.data;
+      data.sort((a, b) => b.event_date - a.event_date) // most recent event first
+      players[playerId].ftp = data[0].ftp;
+      players[playerId].weight = data[0].weight[0];
+      const hrs = data.map((race) => {
         return race.max_hr[0];
       });
       players[playerId].maxHR = Math.max(...hrs);
@@ -87,15 +97,19 @@ function setPlayerTableData(playerId) {
   const player = players[playerId];
   const playerData = document.getElementById(`player-data-${playerId}`);
   playerData.querySelector('.name').textContent = player.name;
-  playerData.querySelector('.power').textContent = player.power;
-  playerData.querySelector('.power').style = `background-color: ${ZONE_COLOR[getPowerZone(player)]};`;
+  playerData.querySelector('.power-watts').textContent = player.power;
+  playerData.querySelector('.power-wkg').textContent = player.weight ? (player.power / player.weight).toFixed(1) : '--';
+  playerData.querySelectorAll('.power-split').forEach((el, i) => {
+    el.style = `background-color: ${ZONE_COLOR[getPowerZone(player)]};`;
+  });
+
   playerData.querySelector('.hr').textContent = player.heartrate;
   playerData.querySelector('.hr').style = `background-color: ${ZONE_COLOR[getHRZone(player)]};`;
 }
 
-Object.keys(players).forEach((playerId, i) => {
+Object.keys(players).forEach(async(playerId, i) => {
   const player = players[playerId];
-  setPlayerZPData(playerId);
+  await setPlayerZPData(playerId);
   const playerData = document.getElementById('template-player-data').content.cloneNode(true);
   playerData.querySelector('.player-data').id = `player-data-${playerId}`;
   document

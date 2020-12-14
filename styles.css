@@ -18,12 +18,24 @@ table {
   opacity: 90%;
 }
 
+.data-field {
+  text-align: center;
+}
+
 .name {
   width: 150px;
 }
-.power, .hr {
+
+.power {
+  width: 100px;
+}
+
+.power-split {
+  width: 50px;
+}
+
+.hr {
   width: 75px;
-  text-align: center;
 }
 
 th {
