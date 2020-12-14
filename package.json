@@ -10,7 +10,7 @@
   "keywords": [
     "Zwift"
   ],
-  "author": "GitHub",
+  "author": "Justin Steigel",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^11.0.4",
