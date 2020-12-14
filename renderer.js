@@ -9,6 +9,8 @@ const players = {
   72371: { // new player row
     id: 72371,
     name: 'Justin',
+    ftp: 302,
+    maxHR: 194,
     distance: 12475,
     power: 200,
     heartrate: 156,
@@ -21,9 +23,53 @@ const players = {
   //   heartrate: 156,
   // },
 }
+
+const ZONE_COLOR = {
+  1: 'LightGrey',
+  2: 'Blue',
+  3: 'Gold',
+  4: 'DarkOrange',
+  5: 'Red',
+}
+
+const POWER_ZONES = {
+  1: .76,
+  2: .9,
+  3: 1.05,
+  4: 1.25,
+}
+
+const HR_ZONES = {
+  1: .6,
+  2: .7,
+  3: .8,
+  4: .93,
+}
+
+function getHRZone(player) {
+  const maxHR = player.maxHR;
+  const hr = player.heartrate;
+  for (const zone in HR_ZONES) {
+    if (hr < maxHR * HR_ZONES[zone]) {
+      return zone;
+    }
+  }
+  return 5;
+}
+
+function getPowerZone(player) {
+  const ftp = player.ftp;
+  const power = player.power;
+  for (const zone in POWER_ZONES) {
+    if (power < ftp * POWER_ZONES[zone]) {
+      return zone;
+    }
+  }
+  return 5;
+}
+
 async function setPlayerZPData(playerId) {
   try {
-    console.log(players);
     const resp = await fetch(`https://www.zwiftpower.com/cache3/profile/${playerId}_all.json`).then(r => r.json());
     if (resp) {
       players[playerId].ftp = resp.data[0].ftp;
@@ -32,7 +78,6 @@ async function setPlayerZPData(playerId) {
       });
       players[playerId].maxHR = Math.max(...hrs);
     }
-    console.log(players);
   } catch (error) {
     console.log(error.response.body);
   }
@@ -43,8 +88,9 @@ function setPlayerTableData(playerId) {
   const playerData = document.getElementById(`player-data-${playerId}`);
   playerData.querySelector('.name').textContent = player.name;
   playerData.querySelector('.power').textContent = player.power;
-  playerData.querySelector('.power').style = "background-color: red;";
+  playerData.querySelector('.power').style = `background-color: ${ZONE_COLOR[getPowerZone(player)]};`;
   playerData.querySelector('.hr').textContent = player.heartrate;
+  playerData.querySelector('.hr').style = `background-color: ${ZONE_COLOR[getHRZone(player)]};`;
 }
 
 Object.keys(players).forEach((playerId, i) => {
@@ -68,12 +114,42 @@ function updatePlayer(playerState) {
   }
 };
 
+// function sleep(ms) {
+//   return new Promise(resolve => setTimeout(resolve, ms));
+// }
+//
+// async function mockPlayerData() {
+//   const stats = [
+//     [250, 145],
+//     [290, 160],
+//     [310, 160],
+//     [350, 165],
+//     [400, 170],
+//     [800, 180],
+//     [1000, 190],
+//     [100, 190],
+//     [100, 185],
+//     [100, 175],
+//     [100, 170],
+//   ];
+//   for (const i in powers) {
+//     const item = stats[i];
+//     const player = players[72371];
+//     player.power = item[0];
+//     player.heartrate = item[1];
+//     setPlayerTableData(72371);
+//     console.log(item);
+//     await sleep(1000);
+//   }
+// }
+//
+// mockPlayerData();
+
 window.zwiftData.on('outgoingPlayerState', (playerState, serverWorldTime) => {
   updatePlayer(playerState);
 });
 
 window.zwiftData.on('incomingPlayerState', (playerState, serverWorldTime) => {
-  console.log(playerState.id);
   updatePlayer(playerState);
 });
 
