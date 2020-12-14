@@ -23,6 +23,7 @@
   "dependencies": {
     "@zwfthcks/zwift-packet-monitor": "^0.3.7",
     "ip": "^1.1.5",
+    "node-fetch": "^2.6.1",
     "react": "^17.0.1",
     "react-scripts": "^4.0.1"
   }

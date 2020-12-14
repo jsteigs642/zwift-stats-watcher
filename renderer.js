@@ -13,13 +13,29 @@ const players = {
     power: 200,
     heartrate: 156,
   },
-  12345: { // new player row
-    id: 12345,
-    name: 'Fake user',
-    distance: 12475,
-    power: 200,
-    heartrate: 156,
-  },
+  // 12345: { // new player row
+  //   id: 12345,
+  //   name: 'Fake user',
+  //   distance: 12475,
+  //   power: 200,
+  //   heartrate: 156,
+  // },
+}
+async function setPlayerZPData(playerId) {
+  try {
+    console.log(players);
+    const resp = await fetch(`https://www.zwiftpower.com/cache3/profile/${playerId}_all.json`).then(r => r.json());
+    if (resp) {
+      players[playerId].ftp = resp.data[0].ftp;
+      const hrs = resp.data.map((race) => {
+        return race.max_hr[0];
+      });
+      players[playerId].maxHR = Math.max(...hrs);
+    }
+    console.log(players);
+  } catch (error) {
+    console.log(error.response.body);
+  }
 }
 
 function setPlayerTableData(playerId) {
@@ -27,11 +43,13 @@ function setPlayerTableData(playerId) {
   const playerData = document.getElementById(`player-data-${playerId}`);
   playerData.querySelector('.name').textContent = player.name;
   playerData.querySelector('.power').textContent = player.power;
+  playerData.querySelector('.power').style = "background-color: red;";
   playerData.querySelector('.hr').textContent = player.heartrate;
 }
 
 Object.keys(players).forEach((playerId, i) => {
   const player = players[playerId];
+  setPlayerZPData(playerId);
   const playerData = document.getElementById('template-player-data').content.cloneNode(true);
   playerData.querySelector('.player-data').id = `player-data-${playerId}`;
   document
