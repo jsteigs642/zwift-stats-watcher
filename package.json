@@ -1,18 +1,14 @@
 {
-  "name": "electron-quick-start",
+  "name": "zwift-stats-watcher",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Overlay application to watch stats of riders on Zwift",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/jsteigs642/zwift-stats-watcher",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Zwift"
   ],
   "author": "GitHub",
   "license": "CC0-1.0",
@@ -23,8 +19,6 @@
   "dependencies": {
     "@zwfthcks/zwift-packet-monitor": "^0.3.7",
     "ip": "^1.1.5",
-    "node-fetch": "^2.6.1",
-    "react": "^17.0.1",
-    "react-scripts": "^4.0.1"
+    "node-fetch": "^2.6.1"
   }
 }
