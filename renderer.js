@@ -6,8 +6,8 @@
 // process.
 
 const players = {
-  72371: { // new player row
-    id: 72371,
+  703914: { // new player row
+    id: 703914,
     name: 'Justin',
     ftp: 302, // Watts
     maxHR: 194, // bpm
@@ -15,14 +15,7 @@ const players = {
     distance: 12475, // who knows...
     power: 200, // watts
     heartrate: 156, // bpm
-  },
-  // 12345: { // new player row
-  //   id: 12345,
-  //   name: 'Fake user',
-  //   distance: 12475,
-  //   power: 200,
-  //   heartrate: 156,
-  // },
+  }
 }
 
 const ZONE_COLOR = {
@@ -50,7 +43,7 @@ const HR_ZONES = {
 function getHRZone(player) {
   const maxHR = player.maxHR;
   const hr = player.heartrate;
-  if (maxHR) {
+  if (maxHR && hr) {
     for (const zone in HR_ZONES) {
       if (hr < maxHR * HR_ZONES[zone]) {
         return zone;
@@ -64,7 +57,7 @@ function getHRZone(player) {
 function getPowerZone(player) {
   const ftp = player.ftp;
   const power = player.power;
-  if (ftp) {
+  if (ftp && power) {
     for (const zone in POWER_ZONES) {
       if (power < ftp * POWER_ZONES[zone]) {
         return zone;
@@ -89,7 +82,7 @@ async function setPlayerZPData(playerId) {
       players[playerId].maxHR = Math.max(...hrs);
     }
   } catch (error) {
-    console.log(error.response.body);
+    console.log(error.response);
   }
 }
 
@@ -97,26 +90,27 @@ function setPlayerTableData(playerId) {
   const player = players[playerId];
   const playerData = document.getElementById(`player-data-${playerId}`);
   playerData.querySelector('.name').textContent = player.name;
-  playerData.querySelector('.power-watts').textContent = player.power;
-  playerData.querySelector('.power-wkg').textContent = player.weight ? (player.power / player.weight).toFixed(1) : '--';
+  playerData.querySelector('.power-watts').textContent = player.power ? player.power : '--';
+  playerData.querySelector('.power-wkg').textContent = player.weight && player.power ? (player.power / player.weight).toFixed(1) : '--';
   playerData.querySelectorAll('.power-split').forEach((el, i) => {
     el.style = `background-color: ${ZONE_COLOR[getPowerZone(player)]};`;
   });
 
-  playerData.querySelector('.hr').textContent = player.heartrate;
+  playerData.querySelector('.hr').textContent = player.heartrate ? player.heartrate : '--';
   playerData.querySelector('.hr').style = `background-color: ${ZONE_COLOR[getHRZone(player)]};`;
 }
 
-Object.keys(players).forEach(async(playerId, i) => {
-  const player = players[playerId];
+async function addPlayer(playerId) {
   await setPlayerZPData(playerId);
   const playerData = document.getElementById('template-player-data').content.cloneNode(true);
   playerData.querySelector('.player-data').id = `player-data-${playerId}`;
   document
-    .getElementById('player-data')
+    .querySelector('#player-data tbody')
     .append(playerData);
   setPlayerTableData(playerId);
-});
+}
+
+Object.keys(players).forEach(addPlayer);
 
 function updatePlayer(playerState) {
   if (playerState.id in players) {
@@ -127,6 +121,32 @@ function updatePlayer(playerState) {
     setPlayerTableData(playerState.id);
   }
 };
+
+window.zwiftData.on('outgoingPlayerState', (playerState, serverWorldTime) => {
+  console.log(playerState);
+  updatePlayer(playerState);
+});
+
+window.zwiftData.on('incomingPlayerState', (playerState, serverWorldTime) => {
+  // console.log(playerState.id);
+  updatePlayer(playerState);
+});
+
+document.querySelector('button.add-player').addEventListener('click', async () => {
+  const nameInput = document.querySelector('input[name=player-name]');
+  const idInput = document.querySelector('input[name=zwift-id]');
+  const playerName = nameInput.value;
+  const playerId = parseInt(idInput.value);
+  if (playerName && playerId) {
+    players[playerId] = {
+      id: playerId,
+      name: playerName
+    }
+    await addPlayer(playerId);
+    nameInput.value = '';
+    idInput.value = '';
+  }
+});
 
 // function sleep(ms) {
 //   return new Promise(resolve => setTimeout(resolve, ms));
@@ -158,14 +178,6 @@ function updatePlayer(playerState) {
 // }
 //
 // mockPlayerData();
-
-window.zwiftData.on('outgoingPlayerState', (playerState, serverWorldTime) => {
-  updatePlayer(playerState);
-});
-
-window.zwiftData.on('incomingPlayerState', (playerState, serverWorldTime) => {
-  updatePlayer(playerState);
-});
 
 // PlayerState {
 //   id: 72371,

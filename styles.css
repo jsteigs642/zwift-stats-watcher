@@ -14,7 +14,7 @@ th, td {
   border: 1px solid white;
 }
 
-table {
+table, button, input {
   opacity: 90%;
 }
 
@@ -42,4 +42,20 @@ th {
   font-weight: 900;
   -webkit-user-select: none;
   -webkit-app-region: drag;
+}
+
+input {
+  width: 100px;
+}
+
+td.submit {
+  text-align: center;
+}
+
+.add-player {
+  font-weight: 900;
+  /* font-size: 18px; */
+  background-color: white;
+  width: 50px;
+  border-radius: 5px
 }

@@ -18,11 +18,27 @@
       </tr>
     </template>
     <table id="player-data">
-      <tr class="player-data-header">
-        <th class="name">Name</th>
-        <th class="power" colspan="2">Power</th>
-        <th class="hr">HR</th>
-      </tr>
+      <thaed>
+        <tr class="player-data-header">
+          <th class="name">Name</th>
+          <th class="power" colspan="2">Power</th>
+          <th class="hr">HR</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <td>
+            <input type="text" name="player-name" placeholder="Name" />
+          </td>
+          <td colspan="2">
+            <input type="text" name="zwift-id" placeholder="Zwift ID" />
+          </td>
+          <td class="submit">
+            <button class="add-player">+</button>
+          </td>
+        </tr>
+      </tfoot>
     </table>
     <!-- You can also require other files to run in this process -->
     <script src="./renderer.js"></script>
