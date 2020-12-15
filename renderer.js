@@ -6,16 +6,16 @@
 // process.
 
 const players = {
-  703914: { // new player row
-    id: 703914,
-    name: 'Justin',
-    ftp: 302, // Watts
-    maxHR: 194, // bpm
-    weight: 81, // kg
-    distance: 12475, // who knows...
-    power: 200, // watts
-    heartrate: 156, // bpm
-  }
+  // 703914: { // new player row
+  //   id: 703914,
+  //   name: 'Justin',
+  //   ftp: 302, // Watts
+  //   maxHR: 194, // bpm
+  //   weight: 81, // kg
+  //   distance: 12475, // who knows...
+  //   power: 200, // watts
+  //   heartrate: 156, // bpm
+  // }
 }
 
 const ZONE_COLOR = {
