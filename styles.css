@@ -1,61 +1,124 @@
+span, div, table, button, input {
+  opacity: 95%;
+}
 
-table, th, td {
-  border: 1px solid transparent;
-  border-collapse: collapse;
+input[type="text"] {
+  width: 90%;
+}
+
+.submit {
+  text-align: center;
+}
+
+.data-field {
+  border: solid;
+  border-width: thin;
+  border-color: white;
   background-color: CornflowerBlue;
+  text-align: center;
   color: white;
   font-family: sans-serif;
   padding: 4px;
   font-size: 18px;
-  font-weight: bold;
 }
 
-th, td {
-  border: 1px solid white;
+.player-table {
+    width: 100%;
 }
 
-table, button, input {
-  opacity: 90%;
-}
-
-.data-field {
-  text-align: center;
-}
-
-.name {
-  width: 150px;
-}
-
-.power {
-  width: 100px;
-}
-
-.power-split {
-  width: 50px;
-}
-
-.hr {
-  width: 75px;
-}
-
-th {
+.player-data-header {
+  display: flex;
   font-weight: 900;
-  -webkit-user-select: none;
+  text-align: center;
+  border-radius: 15px;
   -webkit-app-region: drag;
 }
 
-input {
-  width: 100px;
+.player-data-footer {
+  /* display: flex; */
+  text-align: left;
 }
 
-td.submit {
-  text-align: center;
+.heading-left {
+  border-top-left-radius: 15px;
+}
+
+.heading-right {
+  border-top-right-radius: 15px;
+}
+
+.cell-1 {
+  width: 46%;
+}
+
+.cell-2 {
+  width: 32%;
+}
+
+.cell-3 {
+  width: 22%;
+}
+
+.cell-full {
+  width: 100%;
+}
+
+.player-data-row {
+  display: flex;
+  font-weight: bold;
+}
+
+.inner-cell-left {
+  border-right: thin solid white;
+  width: 50%;
+}
+
+.inner-cell-right {
+  width: 50%;
+}
+
+.name {
+  text-align: left;
+}
+
+.power-split {
+  display: inline-flex;
 }
 
 .add-player {
   font-weight: 900;
-  /* font-size: 18px; */
   background-color: white;
   width: 50px;
   border-radius: 5px
+}
+
+.footer-toggle {
+  line-height: 1;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  font-weight: 900;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.footer-label {
+  padding-right: 20px;
+  font-size: 14px;
+}
+
+label {
+  float: right;
+  display: inline;
+  padding-left: 2px;
+  padding-right: 5px;
+}
+
+input:radio {
+  float: right;
+  background-color: LightGrey;
+  border-color: transparent;
+}
+
+div.radio-input {
+  font-size: 14px;
 }

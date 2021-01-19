@@ -7,8 +7,8 @@ app.allowRendererProcessReuse = false;
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 305,
-    height: 300,
+    width: 325,
+    height: 450,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
