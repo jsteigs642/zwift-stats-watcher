@@ -74,7 +74,9 @@
 //   },
 // }
 
-const players = {};
+const store = window.store;
+const players = store.get('players', {});
+const tempPlayerData = {};
 
 const ZONE_BG_COLOR = {
   1: 'LightGrey',
@@ -113,13 +115,23 @@ const HR_ZONES = {
 const config = {
   footerVisible: true,
   maxPowerHistory: 50,
+  maxPlayerStates: 200,
   powerDuration: 1,
   shareData: true,
-  maxBufferSize: 10,
+  maxBufferSize: 100,
   url: 'http://zwift.jsteigs642.com/api/stats',
   start: new Date().toISOString(),
   session: Math.round(Math.random() * 1000000000),
+  fieldConfig: {
+    power: true,
+    hr: true,
+    speed: false,
+    distance: false,
+    gas: false,
+  }
 }
+
+let lastUpdate = 0;
 
 const EVENT_BUFFER = [];
 
@@ -159,22 +171,68 @@ async function setPlayerZPData(playerId) {
       data.sort((a, b) => b.event_date - a.event_date) // most recent event first
       players[playerId].ftp = data[0].ftp;
       players[playerId].weight = data[0].weight[0];
+      players[playerId].zpName = data[0].name;
       const hrs = data.map((race) => {
         return race.max_hr[0];
       });
       players[playerId].maxHR = Math.max(...hrs);
+    } else {
+      players[playerId].zpName = 'ZP profile not found';
     }
   } catch (error) {
+    players[playerId].zpName = 'ZP profile not found';
     console.log(error.response);
+  }
+}
+
+function removePlayer(playerId) {
+  document.getElementById(`player-data-${playerId}`).remove();
+  delete players[playerId];
+  store.set('players', players);
+}
+
+function getPlayerDataRow(playerId) {
+  return document.getElementById(`player-data-${playerId}`);
+}
+
+function showColumns() {
+  if (config.fieldConfig.power) {
+    document.querySelectorAll('.power-column').forEach((el, i) => {
+      el.classList.remove('hidden');
+    });
+  } else {
+    document.querySelectorAll('.power-column').forEach((el, i) => {
+      el.classList.add('hidden');
+    });
+  }
+  if (config.fieldConfig.speed) {
+    document.querySelectorAll('.speed-column').forEach((el, i) => {
+      el.classList.remove('hidden');
+    });
+  } else {
+    document.querySelectorAll('.speed-column').forEach((el, i) => {
+      el.classList.add('hidden');
+    });
+  }
+  if (config.fieldConfig.gas) {
+    document.querySelectorAll('.gas-column').forEach((el, i) => {
+      el.classList.remove('hidden');
+    });
+  } else {
+    document.querySelectorAll('.gas-column').forEach((el, i) => {
+      el.classList.add('hidden');
+    });
   }
 }
 
 function setPlayerTableData(playerId) {
   const player = players[playerId];
-  const playerData = document.getElementById(`player-data-${playerId}`);
-  playerData.querySelector('.name').textContent = player.name;
+  const playerData = getPlayerDataRow(playerId);
+  playerData.querySelector('.name').querySelector('.player-name').textContent = player.name;
+  playerData.querySelector('.name').querySelector('.zp-name').textContent = player.zpName;
   playerData.querySelector('.power-watts').textContent = player.power ? player.power : '--';
   playerData.querySelector('.power-wkg').textContent = player.weight && player.power ? (player.power / player.weight).toFixed(1) : '--';
+
   const powerZone = getPowerZone(player);
   const hrZone = getHRZone(player);
   playerData.querySelectorAll('.power-split').forEach((el, i) => {
@@ -182,6 +240,8 @@ function setPlayerTableData(playerId) {
   });
   playerData.querySelector('.hr').textContent = player.heartrate ? player.heartrate : '--';
   playerData.querySelector('.hr').style = `background-color: ${ZONE_BG_COLOR[hrZone]}; color: ${ZONE_FONT_COLOR[hrZone]};`;
+  playerData.querySelector('.speed-column').textContent = player.speed ? (player.speed / 1000000).toFixed(1) : '--';
+  playerData.querySelector('.gas-column').textContent = player.gas ? player.gas : '--';
 }
 
 async function addPlayer(playerId) {
@@ -192,6 +252,13 @@ async function addPlayer(playerId) {
     .querySelector('.player-table .player-data-content')
     .append(playerData);
   setPlayerTableData(playerId);
+
+  const removePlayerButton = getPlayerDataRow(playerId).querySelector('.remove-player');
+  removePlayerButton.setAttribute('data-id', playerId);
+  removePlayerButton.addEventListener('click', () => {
+    removePlayer(playerId);
+  });
+  showColumns();
 }
 
 Object.keys(players).forEach(addPlayer);
@@ -225,22 +292,51 @@ function shareData(playerState) {
   }
 }
 
+function updateTableData(worldTime) {
+  Object.keys(players).forEach(playerId => {
+    const player = players[playerId];
+    if (player.maxWorldTime > lastUpdate) {
+      setPlayerTableData(player.id);
+    }
+  });
+  lastUpdate = worldTime;
+}
+
 function updatePlayer(playerState) {
+  // change Long types to numbers
+  playerState.worldTime = playerState.worldTime.toNumber();
+  playerState.heading = playerState.heading.toNumber();
+  playerState.sport = playerState.sport.toNumber();
   if (playerState.id in players) {
     if (config.shareData) {
       shareData(playerState);
     }
     const player = players[playerState.id];
+    player.maxWorldTime = Math.max(playerState.worldTime, player.maxWorldTime);
+    player.states.push(playerState);
+    if (player.states.length > config.maxPlayerStates) {
+      player.states.shift();
+    }
     player.powerHistory.push(playerState.power);
     if (player.powerHistory.length > config.maxPowerHistory) {
       player.powerHistory.shift();
     }
-    const powers = player.powerHistory.slice(Math.max(player.powerHistory.length - config.powerDuration, 0));
-    const powerTotal = powers.reduce((a, b) => a + b, 0);
-    player.power = Math.round(powerTotal / powers.length);
+    if (config.powerDuration === 1) {
+      player.power = playerState.power;
+    } else {
+      powers = player.states.filter(
+        state => state.worldTime >= (player.maxWorldTime - (config.powerDuration * 1000))
+      ).map(state => state.power);
+      const powerTotal = powers.reduce((a, b) => a + b, 0);
+      player.power = Math.round(powerTotal / powers.length);
+    }
     player.heartrate = playerState.heartrate;
     player.distance = playerState.distance;
-    setPlayerTableData(playerState.id);
+    player.speed = playerState.speed;
+    if (player.maxWorldTime - lastUpdate > 500) {
+      // Update all player data in the UI every 500ms
+      updateTableData(player.maxWorldTime);
+    }
   }
 };
 
@@ -262,8 +358,12 @@ document.querySelector('button.add-player').addEventListener('click', async () =
       id: playerId,
       name: playerName,
       powerHistory: [],
+      states: [],
+      maxWorldTime: 0,
+      gas: 100,
     }
     await addPlayer(playerId);
+    store.set('players', players);
     nameInput.value = '';
     idInput.value = '';
   }
@@ -273,7 +373,6 @@ const footerToggle = document.querySelector('.footer-toggle')
 footerToggle.addEventListener('click', () => {
   const footer = document.querySelector('.player-data-footer');
   if (config.footerVisible) {
-
     config.footerVisible = false;
     footerToggle.textContent = '+';
     footer.style = 'display: none';
@@ -293,14 +392,31 @@ document.querySelectorAll('input[name=power]').forEach((el, i) => {
   el.addEventListener('click', () => handlePowerSelector(duration));
 });
 
-const shareDataInput = document.querySelector('input[name=share-data]')
+const shareDataInput = document.querySelector('input[name=share-data]');
 shareDataInput.addEventListener('click', () => {
   config.shareData = shareDataInput.checked;
 });
 
-const teamInput = document.querySelector('input[name=team-name]')
+const teamInput = document.querySelector('input[name=team-name]');
 teamInput.addEventListener('onBlur', () => {config.team = teamInput.value});
 
+const powerCheckbox = document.querySelector('input[name=power-column-checkbox]');
+powerCheckbox.addEventListener('click', () => {
+  config.fieldConfig.power = powerCheckbox.checked;
+  showColumns();
+});
+
+const speedCheckbox = document.querySelector('input[name=speed-column-checkbox]');
+speedCheckbox.addEventListener('click', () => {
+  config.fieldConfig.speed = speedCheckbox.checked;
+  showColumns();
+});
+
+const gasCheckbox = document.querySelector('input[name=gas-column-checkbox]');
+gasCheckbox.addEventListener('click', () => {
+  config.fieldConfig.gas = gasCheckbox.checked;
+  showColumns();
+});
 // function sleep(ms) {
 //   return new Promise(resolve => setTimeout(resolve, ms));
 // }
@@ -567,9 +683,9 @@ teamInput.addEventListener('onBlur', () => {config.team = teamInput.value});
 //   progress: 0,
 //   justWatching: 0,
 //   calories: 61273,
-//   x: 30045.130859375,
+//   x: 30045.130859375, // half centimeters
 //   altitude: 11641.2734375,
-//   y: 500580.71875,
+//   y: 500580.71875, // half centimeters
 //   watchingRiderId: 423578,
 //   groupId: 0,
 //   sport: Long { low: 0, high: 0, unsigned: false },

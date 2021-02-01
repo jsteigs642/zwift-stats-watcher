@@ -2,6 +2,42 @@ span, div, table, button, input {
   opacity: 95%;
 }
 
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+  font-size: 12px;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
 input[type="text"] {
   width: 90%;
 }
@@ -13,13 +49,14 @@ input[type="text"] {
 .data-field {
   border: solid;
   border-width: thin;
-  border-color: white;
+  border-color: transparent;
   background-color: CornflowerBlue;
   text-align: center;
   color: white;
   font-family: sans-serif;
   padding: 4px;
   font-size: 18px;
+  margin: 1px;
 }
 
 .player-table {
@@ -48,15 +85,15 @@ input[type="text"] {
 }
 
 .cell-1 {
-  width: 46%;
+  width: 92%;
 }
 
 .cell-2 {
-  width: 32%;
+  width: 64%;
 }
 
 .cell-3 {
-  width: 22%;
+  width: 44%;
 }
 
 .cell-full {
@@ -121,4 +158,33 @@ input:radio {
 
 div.radio-input {
   font-size: 14px;
+}
+
+.remove-player {
+  background-color: Red;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  color: white;
+  vertical-align: middle;
+  padding-top: 0px;
+  padding-left: 3px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 0px;
+  display: none;
+}
+
+
+.tooltip:hover .remove-player {
+  visibility: visible;
+  display: inline;
+}
+
+.hidden {
+  display: none;
+}
+
+.svg-icon {
+  padding-bottom: 0px;
 }
